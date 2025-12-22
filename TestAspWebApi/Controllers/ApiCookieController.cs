@@ -8,14 +8,14 @@ using TestAspWebApi.Models;
 
 namespace TestAspWebApi.Controllers
 {
-    [Route("api")]
+    [Route("apiv1")]
     [ApiController]
-    public class ApiController : ControllerBase
+    public class ApiCookieController : ControllerBase
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ApiController(SignInManager<ApplicationUser> sm, UserManager<ApplicationUser> um)
+        public ApiCookieController(SignInManager<ApplicationUser> sm, UserManager<ApplicationUser> um)
         {
             _signInManager = sm;
             _userManager = um;
@@ -48,7 +48,7 @@ namespace TestAspWebApi.Controllers
             if (!result.Succeeded)
                 return Unauthorized();
 
-            return Ok("Дата регистрации: {user.RegisteredAt}");
+            return Ok($"Дата регистрации: {user.RegisteredAt}");
         }
     }
 }

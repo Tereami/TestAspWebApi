@@ -1,12 +1,16 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Text;
 using TestAspWebApi.Data;
 using TestAspWebApi.Models;
+using TestAspWebApi.Services;
 
 namespace TestAspWebApi
 {
@@ -59,8 +63,35 @@ namespace TestAspWebApi
                 options.LoginPath = "/Account/Login";
             });
 
-            builder.Services.AddAuthentication();
-            builder.Services.AddAuthentication();
+
+            //JWT
+            var jwt = builder.Configuration.GetSection("Jwt");
+            var key = Encoding.UTF8.GetBytes(jwt["Key"]!);
+
+            builder.Services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwt["Issuer"],
+                    ValidAudience = jwt["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+            });
+
+            builder.Services.AddScoped<JwtService>();
+
+
+
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -69,6 +100,7 @@ namespace TestAspWebApi
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
             app.UseStaticFiles();
 
             app.UseRouting();

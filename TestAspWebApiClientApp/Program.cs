@@ -4,27 +4,35 @@ namespace TestAspWebApiClientApp
 {
     public class Program
     {
+        private const string baseUrl = "http://localhost:5041/";
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Welcome!");
+            Console.WriteLine("Welcome! Enter 1 to use Cookies. Enter 2 to use JWT.");
+            string? method = Console.ReadLine();
+            string apiUrl = "apiv1";
+            if (method == "2")
+                apiUrl = "apiv2";
 
+
+            Uri baseUri = new Uri(baseUrl);
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5041/");
+            client.BaseAddress = baseUri;
             string login = string.Empty;
             string pass = string.Empty;
             string content = string.Empty;
+            HttpResponseMessage loginResponse;
 
             while (true)
             {
-                Console.WriteLine("Your registered username:");
+                Console.WriteLine("Имя пользователя");
                 login = Console.ReadLine()!;
 
                 Console.WriteLine("Password:");
                 pass = Console.ReadLine()!;
 
                 Console.WriteLine("Попытка авторизации...");
-                HttpResponseMessage loginResponse = await client.PostAsJsonAsync(
-                    "api/login",
+                loginResponse = await client.PostAsJsonAsync(
+                    $"{apiUrl}/login",
                     new { UserName = login, Password = pass });
 
 
@@ -36,34 +44,24 @@ namespace TestAspWebApiClientApp
                     continue;
                 }
                 else
+                {
+                    Console.WriteLine($"Получен ответ: {content}");
                     break;
+                }
             }
             Console.WriteLine("Success!");
 
-            while (true)
+
+            if (method == "1")
             {
-                Console.WriteLine("Введите команду или exit для выхода");
-
-                string command = Console.ReadLine()!;
-                if (command == "exit")
-                    return;
-
-                Console.WriteLine("Запрос отправлен...");
-                HttpResponseMessage resp = await client.PostAsJsonAsync($"api/{command}",
-                    new { UserName = login, Password = pass });
-
-
-                content = await resp.Content.ReadAsStringAsync();
-
-                if (!resp.IsSuccessStatusCode)
-                {
-                    Console.WriteLine($"Ошибка: {resp.StatusCode} {content}");
-                }
-                else
-                {
-                    Console.WriteLine(content);
-                }
+                await CookieConnection.Start(client, apiUrl, login, pass);
             }
+            else
+            {
+                await JwtConnection.Start(client, apiUrl, loginResponse);
+            }
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
         }
     }
 }
