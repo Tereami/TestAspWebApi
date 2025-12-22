@@ -1,0 +1,32 @@
+﻿@model TestAspWebApi.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<div class="row justify-content-center">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+    <form asp-action="Register" class="modal-body small">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="mb-3">
+            <label asp-for="@Model.UserName" class="form-label">Ваше имя:</label>
+            <input asp-for="@Model.UserName" required class="form-control" />
+            <span asp-validation-for="@Model.UserName"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="@Model.Password" class="form-label">Пароль:</label>
+            <input asp-for="@Model.Password" placeholder="Не менее 9 символов" required class="form-control" />
+            <span asp-validation-for="@Model.Password"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="@Model.ConfirmPassword" class="form-label">Повторите пароль:</label>
+            <input asp-for="@Model.ConfirmPassword" required class="form-control" />
+            <span asp-validation-for="@Model.ConfirmPassword"></span>
+        </div>
+        <div class="d-grid mb-3">
+            <input type="submit" class="btn btn-primary" value="Зарегистрироваться">
+        </div>
+        <div>
+            Уже зарегистрированы? <a asp-controller="Account" asp-action="Login">Войдите в систему</a>
+        </div>
+    </form>
+</div>

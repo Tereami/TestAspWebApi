@@ -1,0 +1,20 @@
+﻿@model TestAspWebApi.Models.CabinetViewModel
+@{
+    ViewData["Title"] = "Личный кабинет";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+    <p>
+        Здравствуйте, @Model.UserName !
+    </p>
+    <p>
+        Дата регистрации: @Model.RegisteredAt
+    </p>
+</div>
+<div>
+    <a asp-action="Download">Скачать приложение</a>
+</div>
+<div>
+    <a asp-controller="Account" asp-action="Logout">Выход</a>
+</div>
