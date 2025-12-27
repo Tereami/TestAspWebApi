@@ -4,17 +4,49 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">@ViewData["Title"]</h1>
-    <p>
-        Здравствуйте, @Model.UserName !
-    </p>
-    <p>
-        Дата регистрации: @Model.RegisteredAt
-    </p>
+    <div>
+        <h1 class="display-4">@ViewData["Title"]</h1>
+        <p>
+            Здравствуйте, @Model.UserName !
+        </p>
+        <p>
+            Дата регистрации: @Model.RegisteredAt
+        </p>
+    </div>
+    <div>
+        <a asp-action="Download">Скачать приложение</a>
+    </div>
+    <div>
+        <a asp-controller="Account" asp-action="Logout">Выход</a>
+    </div>
 </div>
 <div>
-    <a asp-action="Download">Скачать приложение</a>
-</div>
-<div>
-    <a asp-controller="Account" asp-action="Logout">Выход</a>
+    <h3>Активные сессии</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Created at</th>
+                <th scope="col">Expires at</th>
+                <th scope="col">IP address</th>
+                <th scope="col">OS</th>
+                <th scope="col">Client app ver.</th>
+                <th scope="col">Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (UserSessionViewModel session in Model.Sessions)
+            {
+                <tr>
+                    <td scope="row">@session.Id</td>
+                    <td>@session.LoginTime</td>
+                    <td>@session.ExpiresTime</td>
+                    <td>@session.IpAddress</td>
+                    <td>@session.WindowsVersion</td>
+                    <td>@session.ClientAppVersion</td>
+                    <td>@session.Active</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>

@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
@@ -41,7 +39,8 @@ namespace TestAspWebApi
 
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             builder.Services.Configure<IdentityOptions>(opt =>
             {
@@ -50,6 +49,8 @@ namespace TestAspWebApi
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequiredUniqueChars = 3;
+
+                opt.SignIn.RequireConfirmedAccount = false;
 
                 opt.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -._";
 
@@ -65,41 +66,34 @@ namespace TestAspWebApi
 
 
             //JWT
-            var jwt = builder.Configuration.GetSection("Jwt");
-            var key = Encoding.UTF8.GetBytes(jwt["Key"]!);
-
-            builder.Services.AddAuthentication(opt =>
-            {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            builder.Services.AddAuthentication()
+                .AddJwtBearer(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwt["Issuer"],
-                    ValidAudience = jwt["Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(key)
-                };
-            });
+                    var jwt = builder.Configuration.GetSection("Jwt");
+                    var key = Encoding.UTF8.GetBytes(jwt["Key"]!);
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwt["Issuer"],
+                        ValidAudience = jwt["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                    };
+                });
 
             builder.Services.AddScoped<JwtService>();
-
-
-
             builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+            //if (!app.Environment.IsDevelopment())
+            //{
+            //    app.UseExceptionHandler("/Home/Error");
+            //}
+            app.UseDeveloperExceptionPage();
 
             app.UseStaticFiles();
 
