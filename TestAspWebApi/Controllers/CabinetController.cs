@@ -54,7 +54,7 @@ namespace TestAspWebApi.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> RevokeAllSessions()
         {
             ApplicationUser? user = await _userManager.GetUserAsync(User);
@@ -65,6 +65,7 @@ namespace TestAspWebApi.Controllers
                 .ToListAsync();
             foreach (RefreshToken token in tokens)
                 token.Revoked = true;
+
             await _db.SaveChangesAsync();
 
             return RedirectToAction("Index");

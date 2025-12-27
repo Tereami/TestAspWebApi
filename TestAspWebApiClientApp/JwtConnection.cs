@@ -61,7 +61,10 @@ namespace TestAspWebApiClientApp
                     return;
 
                 if (command == "date")
+                {
+                    tokens = await TryAuthorizedRequest(client, tokens);
                     await GetDateAsync(client);
+                }
             }
         }
 
@@ -150,6 +153,12 @@ namespace TestAspWebApiClientApp
         static async Task GetDateAsync(HttpClient client)
         {
             HttpResponseMessage response = await client.GetAsync($"{apiUrl}/date");
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(response.StatusCode);
+                return;
+            }
+
             string content = await response.Content.ReadAsStringAsync();
             Console.WriteLine(content);
         }
