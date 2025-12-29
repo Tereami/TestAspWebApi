@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestAspWebApi.db" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Files\" />
   </ItemGroup>
 
@@ -24,6 +28,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TestAspWebApi.Models\TestAspWebApi.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,14 +8,17 @@ namespace TestAspWebApi.Models
 
         public string Token { get; set; } = Guid.NewGuid().ToString();
 
+
         public DateTime ExpiresAt { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
         public bool Revoked { get; set; } = false;
 
         public string UserId { get; set; }
-
         public ApplicationUser User { get; set; }
+
+        public string MachineId { get; set; }
+        public string OsVersion { get; set; }
+        public string ClientUserName { get; set; }
+        public string? IpAddress { get; set; }
     }
 }

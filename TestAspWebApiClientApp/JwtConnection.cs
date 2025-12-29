@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-
+using TestAspWebApi.Models;
 
 namespace TestAspWebApiClientApp
 {
@@ -73,6 +73,16 @@ namespace TestAspWebApiClientApp
             string login = string.Empty;
             string pass = string.Empty;
 
+            DesktopLoginDto loginDto = new DesktopLoginDto
+            {
+                UserName = login,
+                Password = pass,
+                MachineId = MachineIdGenerator.Get(),
+                OsVersion = Environment.OSVersion.ToString(),
+                ClientUserName = Environment.UserName,
+            };
+
+
             while (true)
             {
                 Console.WriteLine("Имя пользователя");
@@ -84,7 +94,7 @@ namespace TestAspWebApiClientApp
                 Console.WriteLine("Попытка авторизации по логину и паролю...");
                 HttpResponseMessage loginResponse = await client.PostAsJsonAsync(
                     $"{apiUrl}/login",
-                    new { UserName = login, Password = pass });
+                    loginDto);
 
                 string content = await loginResponse.Content.ReadAsStringAsync();
 
@@ -180,5 +190,7 @@ namespace TestAspWebApiClientApp
             await File.WriteAllTextAsync(tokenJsonFilePath, tokensJson);
             Console.WriteLine($"Токен {tokensJson} сохранен в файл: {tokenJsonFilePath}");
         }
+
+
     }
 }
